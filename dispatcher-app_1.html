@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Диспетчер PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Golos+Text:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --s1: #141414;
+  --s2: #1a1a1a;
+  --s3: #222;
+  --bd: rgba(255,255,255,0.07);
+  --bd2: rgba(255,255,255,0.12);
+  --amber: #f5a623;
+  --amber2: #ffc044;
+  --green: #00e676;
+  --red: #ff4444;
+  --blue: #4fc3f7;
+  --text: #f0f0f0;
+  --t2: #888;
+  --t3: #444;
+  --r: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Golos Text', sans-serif;
+  font-size: 15px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* STATUS BAR SIMULATION */
+.statusbar {
+  height: 44px;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t2);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* HEADER */
+.hdr {
+  padding: 8px 20px 16px;
+  background: var(--bg);
+  position: sticky;
+  top: 44px;
+  z-index: 99;
+  border-bottom: 1px solid var(--bd);
+}
+
+.hdr-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.brand {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: var(--amber);
+}
+
+.notif-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.notif-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--amber);
+  border-radius: 50%;
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  border: 2px solid var(--bg);
+}
+
+/* ALERT BANNER */
+.alert {
+  background: linear-gradient(135deg, rgba(245,166,35,.15), rgba(245,166,35,.05));
+  border: 1px solid rgba(245,166,35,.3);
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.alert-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(245,166,35,.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.alert-text { flex: 1 }
+.alert-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--amber);
+  letter-spacing: .05em;
+  margin-bottom: 2px;
+}
+.alert-sub { font-size: 12px; color: var(--t2) }
+
+.alert-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* MAIN */
+.main { padding: 20px 20px 100px }
+
+/* SECTION HEADER */
+.sec-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sec-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--t2);
+}
+.sec-count {
+  font-size: 11px;
+  color: var(--t3);
+  background: var(--s2);
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid var(--bd);
+}
+
+/* ЗАЯВКА CARD */
+.zayvka {
+  background: var(--s1);
+  border: 1px solid var(--bd);
+  border-radius: var(--r);
+  margin-bottom: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .2s, transform .1s;
+  animation: slideIn .3s ease both;
+}
+.zayvka:active { transform: scale(.98) }
+.zayvka.new { border-color: rgba(245,166,35,.4) }
+.zayvka.confirmed { border-color: rgba(0,230,118,.3) }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+.zayvka-top {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.z-emoji {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--s2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 1px solid var(--bd);
+}
+
+.z-info { flex: 1; min-width: 0 }
+.z-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+.z-journalist {
+  font-size: 12px;
+  color: var(--t2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.z-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.z-status.new {
+  background: rgba(245,166,35,.15);
+  color: var(--amber);
+  border: 1px solid rgba(245,166,35,.3);
+}
+.z-status.confirmed {
+  background: rgba(0,230,118,.1);
+  color: var(--green);
+  border: 1px solid rgba(0,230,118,.25);
+}
+
+.z-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.z-divider {
+  height: 1px;
+  background: var(--bd);
+  margin: 0 16px;
+}
+
+.z-meta {
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.z-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--t2);
+}
+
+.z-meta-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--s3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.z-meta-val {
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.z-operator {
+  margin: 0 16px 14px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.z-operator.searching {
+  background: rgba(245,166,35,.06);
+  border: 1px dashed rgba(245,166,35,.3);
+  color: var(--amber);
+}
+
+.z-operator.found {
+  background: rgba(0,230,118,.06);
+  border: 1px solid rgba(0,230,118,.2);
+  color: var(--green);
+}
+
+/* OPERATOR SELECTION OVERLAY */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.7);
+  z-index: 200;
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: flex-end;
+}
+.overlay.active { display: flex }
+
+.sheet {
+  background: var(--s1);
+  border-radius: 24px 24px 0 0;
+  border: 1px solid var(--bd);
+  border-bottom: none;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  animation: slideUp .3s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%) }
+  to { transform: translateY(0) }
+}
+
+.sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--bd2);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+
+.sheet-hdr {
+  padding: 16px 20px 0;
+}
+
+.sheet-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.sheet-sub {
+  font-size: 12px;
+  color: var(--t2);
+  margin-bottom: 16px;
+}
+
+/* REQUEST MINI CARD */
+.req-mini {
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.req-mini-item { font-size: 12px }
+.req-mini-lbl { color: var(--t3); margin-bottom: 2px; font-size: 11px }
+.req-mini-val { color: var(--text); font-weight: 500 }
+
+/* WEEK STRIP */
+.week-strip {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.day-cell {
+  background: var(--s2);
+  border: 1px solid var(--bd);
+  border-radius: 10px;
+  padding: 6px 3px;
+  text-align: center;
+}
+
+.day-cell.target {
+  background: rgba(245,166,35,.12);
+  border-color: rgba(245,166,35,.5);
+}
+
+.day-name {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--t3);
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.day-num {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--t2);
+}
+
+.day-cell.target .day-num { color: var(--amber) }
+
+.day-dots {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+  margin-top: 4px;
+  min-height: 6px;
+}
+
+.d-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.d-dot.busy { background: var(--red); opacity: .7 }
+.d-dot.free { background: var(--green); opacity: .35 }
+.d-dot.target { background: var(--amber) }
+
+/* OPS SECTION */
+.ops-label {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--t3);
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+/* OPERATOR ROW */
+.op-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+
+.op-row:active { background: var(--s2) }
+.op-row.selected { background: rgba(245,166,35,.06) }
+
+.op-av {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--s2);
+  border: 1.5px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--t2);
+  flex-shrink: 0;
+  transition: border-color .2s, color .2s;
+}
+
+.op-row.selected .op-av {
+  border-color: var(--amber);
+  color: var(--amber);
+  background: rgba(245,166,35,.1);
+}
+
+.op-row.busy-today .op-av {
+  border-color: rgba(255,68,68,.4);
+  color: var(--red);
+}
+
+.op-info { flex: 1; min-width: 0 }
+.op-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.op-role { font-size: 11px; color: var(--t3) }
+
+.op-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+}
+
+.op-badge.free {
+  background: rgba(0,230,118,.1);
+  color: var(--green);
+  border: 1px solid rgba(0,230,118,.2);
+}
+
+.op-badge.busy {
+  background: rgba(255,68,68,.1);
+  color: var(--red);
+  border: 1px solid rgba(255,68,68,.2);
+}
+
+.op-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .15s, background .15s;
+  flex-shrink: 0;
+}
+
+.op-radio-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #000;
+  opacity: 0;
+  transition: opacity .1s;
+}
+
+.op-row.selected .op-radio {
+  border-color: var(--amber);
+  background: var(--amber);
+}
+
+.op-row.selected .op-radio-dot { opacity: 1 }
+
+.sheet-divider {
+  height: 1px;
+  background: var(--bd);
+  margin: 4px 20px;
+}
+
+/* FREELANCER */
+.freelancer-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px 20px;
+  cursor: pointer;
+}
+
+.fl-av {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--s2);
+  border: 1.5px dashed var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* CONFIRM BUTTON */
+.confirm-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px 32px;
+  background: linear-gradient(transparent, var(--s1) 30%);
+  z-index: 300;
+}
+
+.confirm-btn {
+  width: 100%;
+  padding: 16px;
+  border-radius: 16px;
+  border: none;
+  font-family: 'Unbounded', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: pointer;
+  transition: opacity .2s, transform .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.confirm-btn:active { transform: scale(.97) }
+
+.confirm-btn.ready {
+  background: var(--green);
+  color: #000;
+}
+
+.confirm-btn.disabled {
+  background: var(--s3);
+  color: var(--t3);
+  border: 1px solid var(--bd);
+  cursor: not-allowed;
+}
+
+/* BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: var(--s1);
+  border-top: 1px solid var(--bd);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 16px;
+  z-index: 50;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 12px;
+  transition: background .15s;
+}
+
+.nav-item:active { background: var(--s2) }
+
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  position: relative;
+}
+
+.nav-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  background: var(--amber);
+  border-radius: 50%;
+  border: 2px solid var(--s1);
+  font-size: 9px;
+  font-weight: 700;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-label {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--t3);
+}
+
+.nav-item.active .nav-label { color: var(--amber) }
+
+/* SUCCESS */
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.95);
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  text-align: center;
+  padding: 40px;
+}
+
+.success-overlay.show { display: flex }
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(0,230,118,.15);
+  border: 2px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  animation: popIn .4s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0) }
+  to { transform: scale(1) }
+}
+
+.success-title {
+  font-family: 'Unbounded', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.success-sub {
+  font-size: 14px;
+  color: var(--t2);
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <span>27.04.2026</span>
+  <span style="font-family:'Unbounded',sans-serif;font-size:10px;color:var(--amber)">🎬 ДИСПЕТЧЕР</span>
+  <span>●●● WiFi</span>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="brand">PRO DISPATCH</div>
+    <div class="notif-btn">
+      🔔
+      <div class="notif-dot"></div>
+    </div>
+  </div>
+  <div class="alert" onclick="openSheet()">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-text">
+      <div class="alert-title">НОВА ЗАЯВКА</div>
+      <div class="alert-sub">Забіг · завтра 10:30 · Потрібен оператор</div>
+    </div>
+    <div class="alert-arrow">→</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="sec-hdr">
+    <div class="sec-title">Активні заявки</div>
+    <div class="sec-count">3 заявки</div>
+  </div>
+
+  <!-- ЗАЯВКА 1 - НОВА -->
+  <div class="zayvka new" onclick="openSheet()">
+    <div class="zayvka-top">
+      <div class="z-emoji">🏃</div>
+      <div class="z-info">
+        <div class="z-title">Марафон Kyiv 2026</div>
+        <div class="z-journalist">👤 Донцова Софія</div>
+      </div>
+      <div class="z-status new">
+        <div class="z-status-dot"></div>
+        Нова
+      </div>
+    </div>
+    <div class="z-divider"></div>
+    <div class="z-meta">
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📅</div>
+        <div class="z-meta-val">28 Квітня</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">⏰</div>
+        <div class="z-meta-val">10:30</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📍</div>
+        <div class="z-meta-val">Олімпійський</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">🎙</div>
+        <div class="z-meta-val">Виїзний репортаж</div>
+      </div>
+    </div>
+    <div class="z-operator searching">
+      ⏳ Оператор не призначений — натисніть для вибору
+    </div>
+  </div>
+
+  <!-- ЗАЯВКА 2 - НОВА -->
+  <div class="zayvka new" style="animation-delay:.05s">
+    <div class="zayvka-top">
+      <div class="z-emoji">⚖️</div>
+      <div class="z-info">
+        <div class="z-title">Судові слухання</div>
+        <div class="z-journalist">👤 Москова Марія</div>
+      </div>
+      <div class="z-status new">
+        <div class="z-status-dot"></div>
+        Нова
+      </div>
+    </div>
+    <div class="z-divider"></div>
+    <div class="z-meta">
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📅</div>
+        <div class="z-meta-val">27 Квітня</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">⏰</div>
+        <div class="z-meta-val">14:00</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📍</div>
+        <div class="z-meta-val">Дегтярівська</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📋</div>
+        <div class="z-meta-val">Суд</div>
+      </div>
+    </div>
+    <div class="z-operator searching">
+      ⏳ Оператор не призначений — натисніть для вибору
+    </div>
+  </div>
+
+  <!-- ЗАЯВКА 3 - ПІДТВЕРДЖЕНА -->
+  <div class="zayvka confirmed" style="animation-delay:.1s">
+    <div class="zayvka-top">
+      <div class="z-emoji">🏭</div>
+      <div class="z-info">
+        <div class="z-title">Репортаж — завод</div>
+        <div class="z-journalist">👤 Капустинська Галя</div>
+      </div>
+      <div class="z-status confirmed">
+        <div class="z-status-dot"></div>
+        Готово
+      </div>
+    </div>
+    <div class="z-divider"></div>
+    <div class="z-meta">
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📅</div>
+        <div class="z-meta-val">27 Квітня</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">⏰</div>
+        <div class="z-meta-val">09:00</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">📍</div>
+        <div class="z-meta-val">Борщагівка</div>
+      </div>
+      <div class="z-meta-item">
+        <div class="z-meta-icon">🎥</div>
+        <div class="z-meta-val">Наконечний С.</div>
+      </div>
+    </div>
+    <div class="z-operator found">
+      ✅ Наконечний Сергій · Марченко Ивана (водій)
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active">
+    <div class="nav-icon">
+      📋
+      <div class="nav-badge">3</div>
+    </div>
+    <div class="nav-label" style="color:var(--amber)">Заявки</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">📅</div>
+    <div class="nav-label">Календар</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">👥</div>
+    <div class="nav-label">Команда</div>
+  </div>
+  <div class="nav-item">
+    <div class="nav-icon">📊</div>
+    <div class="nav-label">Зайнятість</div>
+  </div>
+</div>
+
+<!-- OPERATOR SELECTION OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeSheet(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-hdr">
+      <div class="sheet-title">🏃 Марафон Kyiv 2026</div>
+      <div class="sheet-sub">Оберіть оператора та водія для заявки</div>
+
+      <!-- REQUEST MINI -->
+      <div class="req-mini">
+        <div class="req-mini-item">
+          <div class="req-mini-lbl">ДАТА</div>
+          <div class="req-mini-val">28 Квітня 2026</div>
+        </div>
+        <div class="req-mini-item">
+          <div class="req-mini-lbl">ЧАС</div>
+          <div class="req-mini-val">10:30</div>
+        </div>
+        <div class="req-mini-item">
+          <div class="req-mini-lbl">ЛОКАЦІЯ</div>
+          <div class="req-mini-val">Олімпійський</div>
+        </div>
+        <div class="req-mini-item">
+          <div class="req-mini-lbl">ЖУРНАЛІСТ</div>
+          <div class="req-mini-val">Донцова Софія</div>
+        </div>
+      </div>
+
+      <!-- WEEK -->
+      <div class="week-strip" id="week"></div>
+    </div>
+
+    <div class="ops-label">Оператори</div>
+
+    <div class="op-row" id="op1" onclick="selectOp('op1','НС','Наконечний Сергій')">
+      <div class="op-av">НС</div>
+      <div class="op-info">
+        <div class="op-name">Наконечний Сергій</div>
+        <div class="op-role">Оператор</div>
+      </div>
+      <div class="op-badge free">Вільний</div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="op-row" id="op2" onclick="selectOp('op2','НД','Невмержицький Дмитро')">
+      <div class="op-av">НД</div>
+      <div class="op-info">
+        <div class="op-name">Невмержицький Дмитро</div>
+        <div class="op-role">Оператор</div>
+      </div>
+      <div class="op-badge free">Вільний</div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="op-row busy-today" id="op3" onclick="selectOp('op3','ПО','Поллодюк Олександр')">
+      <div class="op-av">ПО</div>
+      <div class="op-info">
+        <div class="op-name">Поллодюк Олександр</div>
+        <div class="op-role">Оператор</div>
+      </div>
+      <div class="op-badge busy">Зайнятий</div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="op-row" id="op4" onclick="selectOp('op4','СП','Степанович Петро')">
+      <div class="op-av">СП</div>
+      <div class="op-info">
+        <div class="op-name">Степанович Петро</div>
+        <div class="op-role">Оператор</div>
+      </div>
+      <div class="op-badge free">Вільний</div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="sheet-divider"></div>
+    <div class="ops-label" style="margin-top:12px">Водій</div>
+
+    <div class="op-row" id="drv1" onclick="selectDrv('drv1','МИ','Марченко Ивана')">
+      <div class="op-av">МИ</div>
+      <div class="op-info">
+        <div class="op-name">Марченко Ивана</div>
+        <div class="op-role">Водій · (068) 223-8292</div>
+      </div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="op-row" id="drv2" onclick="selectDrv('drv2','МС','Максимичев Сергій')">
+      <div class="op-av">МС</div>
+      <div class="op-info">
+        <div class="op-name">Максимичев Сергій</div>
+        <div class="op-role">Водій · (093) 185-9836</div>
+      </div>
+      <div class="op-radio"><div class="op-radio-dot"></div></div>
+    </div>
+
+    <div class="sheet-divider"></div>
+    <div class="freelancer-row" onclick="addFreelancer()">
+      <div class="fl-av">+</div>
+      <div class="op-info">
+        <div class="op-name" style="color:var(--t2)">Додати фрілансера</div>
+        <div class="op-role">Ввести ім'я вручну</div>
+      </div>
+    </div>
+
+    <div style="height:100px"></div>
+
+    <div class="confirm-wrap">
+      <button class="confirm-btn disabled" id="confirm-btn" onclick="doConfirm()">
+        Оберіть оператора
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="success">
+  <div class="success-icon">✓</div>
+  <div class="success-title">Підтверджено!</div>
+  <div class="success-sub" id="success-sub"></div>
+  <button onclick="document.getElementById('success').classList.remove('show')" style="margin-top:8px;padding:12px 32px;background:var(--s2);border:1px solid var(--bd);border-radius:12px;color:var(--text);font-family:'Golos Text',sans-serif;font-size:14px;cursor:pointer">
+    Закрити
+  </button>
+</div>
+
+<script>
+let selectedOp = null, selectedDrv = null;
+
+function buildWeek() {
+  const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Нд'];
+  const today = new Date();
+  const dow = today.getDay() || 7;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - dow + 1);
+
+  let html = '';
+  for(let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    const isTarget = i === 1; // вівторок = дата заявки (демо)
+    const busyDots = [
+      i===0 ? '<div class="d-dot busy"></div>' : '',
+      i===2 ? '<div class="d-dot busy"></div>' : '',
+      !isTarget && i!==5 && i!==6 ? '<div class="d-dot free"></div>' : '',
+      isTarget ? '<div class="d-dot target"></div><div class="d-dot target"></div>' : '',
+    ].join('');
+    html += `<div class="day-cell${isTarget?' target':''}">
+      <div class="day-name">${days[i]}</div>
+      <div class="day-num">${d.getDate()}</div>
+      <div class="day-dots">${busyDots}</div>
+    </div>`;
+  }
+  document.getElementById('week').innerHTML = html;
+}
+
+function openSheet() {
+  document.getElementById('overlay').classList.add('active');
+  buildWeek();
+}
+
+function closeSheet(e) {
+  if(e.target === document.getElementById('overlay')) {
+    document.getElementById('overlay').classList.remove('active');
+  }
+}
+
+function selectOp(id, initials, name) {
+  document.querySelectorAll('.op-row[id^="op"]').forEach(r => r.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+  selectedOp = {id, initials, name};
+  updateBtn();
+}
+
+function selectDrv(id, initials, name) {
+  document.querySelectorAll('.op-row[id^="drv"]').forEach(r => r.classList.remove('selected'));
+  document.getElementById(id).classList.add('selected');
+  selectedDrv = {id, initials, name};
+}
+
+function updateBtn() {
+  const btn = document.getElementById('confirm-btn');
+  if(selectedOp) {
+    btn.className = 'confirm-btn ready';
+    const short = selectedOp.name.split(' ').slice(0,2).join(' ');
+    btn.textContent = `✓  Підтвердити — ${short}`;
+  } else {
+    btn.className = 'confirm-btn disabled';
+    btn.textContent = 'Оберіть оператора';
+  }
+}
+
+function addFreelancer() {
+  const name = prompt('Ім\'я та прізвище фрілансера:');
+  if(name && name.trim()) {
+    selectedOp = {id:'fl', initials: name.trim().split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(), name: name.trim()};
+    updateBtn();
+  }
+}
+
+function doConfirm() {
+  if(!selectedOp) return;
+  document.getElementById('overlay').classList.remove('active');
+  const sub = document.getElementById('success-sub');
+  sub.innerHTML = `Оператор: <b style="color:var(--green)">${selectedOp.name}</b>` +
+    (selectedDrv ? `<br>Водій: <b style="color:var(--green)">${selectedDrv.name}</b>` : '') +
+    `<br><br>Telegram-повідомлення надіслано оператору`;
+  document.getElementById('success').classList.add('show');
+}
+
+buildWeek();
+</script>
+</body>
+</html>
