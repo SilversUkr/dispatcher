@@ -1,308 +1,404 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="uk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Диспетчер ПРО</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-:root{
-  --bg:#0c0c0e;--card:#161618;--card2:#1c1c1f;--border:#26262a;
-  --blue:#3b82f6;--blue-dim:rgba(59,130,246,.14);
-  --green:#22c55e;--green-dim:rgba(34,197,94,.12);
-  --red:#ef4444;--red-dim:rgba(239,68,68,.12);
-  --text:#efefef;--sub:#888;--sub2:#444;
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3f1ec">
+  <title>Комплектування знімальної групи</title>
+  <style>
+    :root {
+      --ink: #1f2420;
+      --muted: #68706b;
+      --line: #d8d8d0;
+      --paper: #f3f1ec;
+      --card: #fcfbf7;
+      --soft: #eceae2;
+      --accent: #185c4b;
+      --accent-soft: #dcece5;
+      --accent-ink: #0c4939;
+      --warning: #8b5d14;
+      --warning-soft: #f8edd8;
+      --danger: #a63d35;
+      --shadow: 0 12px 34px rgba(34, 38, 34, .08);
+    }
 
-/* HEADER */
-.hdr{padding:18px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.hdr-title{font-size:16px;font-weight:700}
-.hdr-sub{font-size:11px;color:var(--sub);margin-top:2px}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body {
+      min-width: 320px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 12% -12%, rgba(24, 92, 75, .13), transparent 33rem),
+        linear-gradient(180deg, #f8f7f2 0%, var(--paper) 100%);
+      color: var(--ink);
+      font-family: "Aptos", "Segoe UI Variable", "Helvetica Neue", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
 
-/* WRAP */
-.wrap{max-width:560px;margin:0 auto;padding:14px 14px 40px}
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
 
-/* SPINNER */
-.spin-box{display:flex;flex-direction:column;align-items:center;padding:80px 0;gap:14px}
-.spin{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:rot .7s linear infinite}
-@keyframes rot{to{transform:rotate(360deg)}}
-.spin-box p{color:var(--sub);font-size:13px}
+    .shell { width: min(100%, 680px); margin: 0 auto; padding: env(safe-area-inset-top) 16px calc(28px + env(safe-area-inset-bottom)); }
+    .topbar { display: flex; justify-content: space-between; align-items: center; padding: 22px 4px 18px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 34px; height: 34px; display: grid; place-items: center;
+      border: 1px solid #bdd3ca; border-radius: 10px; background: var(--accent-soft);
+      color: var(--accent-ink); font-size: 17px;
+    }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -.02em; }
+    .brand-sub { margin-top: 2px; color: var(--muted); font-size: 12px; }
+    .secure { color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 6px; }
+    .secure-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 
-/* ERROR */
-.err{background:var(--red-dim);border:1px solid rgba(239,68,68,.25);border-radius:14px;padding:22px;text-align:center;margin-top:30px}
-.err .ei{font-size:28px;margin-bottom:8px}
-.err p{color:var(--red);font-size:13px;line-height:1.5}
+    .card { background: rgba(252, 251, 247, .92); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+    .request-card { overflow: hidden; }
+    .request-head { padding: 20px 20px 16px; border-bottom: 1px solid var(--line); }
+    .request-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .eyebrow { color: var(--muted); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+    .badge { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 99px; font-size: 12px; font-weight: 650; }
+    .badge-new { background: var(--warning-soft); color: var(--warning); }
+    .badge-ready { background: var(--accent-soft); color: var(--accent-ink); }
+    h1 { max-width: 21ch; margin: 0; font-size: clamp(24px, 7vw, 32px); line-height: 1.08; letter-spacing: -.045em; }
+    .request-id { margin-top: 10px; color: var(--muted); font-size: 13px; }
 
-/* CARD */
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
-.card-lbl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--sub);margin-bottom:14px}
+    .date-strip { display: flex; align-items: center; gap: 13px; padding: 15px 20px; background: #e5f0eb; color: var(--accent-ink); }
+    .date-icon { display: grid; flex: 0 0 auto; width: 36px; height: 36px; place-items: center; border-radius: 9px; background: rgba(255,255,255,.6); font-size: 18px; }
+    .date-main { font-weight: 700; font-size: 15px; }
+    .date-sub { margin-top: 2px; font-size: 13px; opacity: .84; }
 
-/* BADGE */
-.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
-.badge-new{background:var(--red-dim);color:var(--red)}
-.badge-ok{background:var(--green-dim);color:var(--green)}
+    .details { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); }
+    .detail { min-width: 0; padding: 15px 16px 16px; background: var(--card); }
+    .detail.full { grid-column: 1 / -1; }
+    .detail-label { margin-bottom: 5px; color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+    .detail-value { overflow-wrap: anywhere; font-size: 14px; font-weight: 600; line-height: 1.35; }
 
-/* REQUEST INFO */
-.req-id{font-size:20px;font-weight:800;margin-bottom:3px}
-.req-topic{font-size:15px;font-weight:500;line-height:1.4;margin-bottom:14px;color:var(--text)}
-.dt-bar{
-  background:linear-gradient(135deg,rgba(59,130,246,.13),rgba(99,102,241,.08));
-  border:1px solid rgba(59,130,246,.2);border-radius:13px;
-  padding:13px 15px;display:flex;align-items:center;gap:11px;margin-bottom:12px
-}
-.dt-ico{font-size:22px}
-.dt-date{font-size:16px;font-weight:700}
-.dt-time{font-size:12px;color:var(--blue);font-weight:600;margin-top:2px}
-.info-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.info-cell{background:var(--card2);border-radius:11px;padding:11px}
-.info-lbl{font-size:10px;color:var(--sub);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
-.info-val{font-size:13px;font-weight:600}
+    .selection { margin-top: 16px; padding: 20px; }
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+    .section-title { margin: 0; font-size: 18px; letter-spacing: -.03em; }
+    .section-note { max-width: 19ch; color: var(--muted); font-size: 12px; line-height: 1.35; text-align: right; }
 
-/* ALREADY CONFIRMED */
-.confirmed-bar{
-  background:var(--green-dim);border:1px solid rgba(34,197,94,.2);
-  border-radius:13px;padding:13px 15px;
-  display:flex;align-items:center;gap:11px;margin-bottom:12px
-}
-.confirmed-bar .ci{font-size:20px}
-.confirmed-bar .ct{font-size:13px;font-weight:600;color:var(--green)}
-.confirmed-bar .cs{font-size:11px;color:var(--sub);margin-top:2px}
+    .operator-list { display: grid; gap: 9px; }
+    .operator {
+      width: 100%; display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+      min-height: 68px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 14px;
+      background: var(--card); color: var(--ink); text-align: left; cursor: pointer; transition: background .16s ease, border-color .16s ease, transform .16s ease;
+    }
+    .operator:active { transform: scale(.985); }
+    .operator[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+    .operator:focus-visible, .primary:focus-visible, .secondary:focus-visible { outline: 3px solid rgba(24, 92, 75, .35); outline-offset: 3px; }
+    .avatar { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: var(--soft); color: #42514a; font-size: 14px; font-weight: 750; }
+    .operator[aria-pressed="true"] .avatar { background: #fff; color: var(--accent-ink); }
+    .operator-name { font-size: 15px; font-weight: 720; letter-spacing: -.015em; }
+    .operator-meta { margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .availability { margin-top: 4px; font-size: 12px; }
+    .availability.free { color: var(--accent-ink); }
+    .availability.busy { color: var(--danger); }
+    .availability.unknown { color: var(--muted); }
+    .tick { width: 24px; height: 24px; display: grid; place-items: center; border: 1px solid #bfc4bd; border-radius: 50%; color: transparent; }
+    .operator[aria-pressed="true"] .tick { border-color: var(--accent); background: var(--accent); color: #fff; }
 
-/* OPERATORS */
-.ops{display:flex;flex-direction:column;gap:9px}
-.op{
-  background:var(--card2);border:2px solid var(--border);border-radius:13px;
-  padding:13px 15px;display:flex;align-items:center;gap:13px;
-  cursor:pointer;transition:border-color .15s,background .15s;
-  -webkit-user-select:none;user-select:none
-}
-.op:active{opacity:.85}
-.op.sel{background:var(--blue-dim);border-color:var(--blue)}
-.op.busy{opacity:.4;pointer-events:none}
-.op-ava{
-  width:42px;height:42px;border-radius:50%;background:#222;
-  display:flex;align-items:center;justify-content:center;
-  font-size:17px;flex-shrink:0;border:2px solid var(--border);transition:border-color .15s
-}
-.op.sel .op-ava{border-color:var(--blue)}
-.op-info{flex:1;min-width:0}
-.op-name{font-size:14px;font-weight:600}
-.op-st{font-size:11px;margin-top:3px}
-.op-st.free{color:var(--green)}
-.op-st.occ{color:var(--red)}
-.op-chk{
-  width:21px;height:21px;border-radius:50%;border:2px solid var(--border);
-  flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s
-}
-.op.sel .op-chk{background:var(--blue);border-color:var(--blue)}
-.chk-svg{display:none}
-.op.sel .chk-svg{display:block}
+    .selection-summary { min-height: 21px; margin: 16px 0 0; color: var(--muted); font-size: 13px; }
+    .selection-summary strong { color: var(--accent-ink); }
 
-/* BUTTON */
-.btn-wrap{margin-top:4px;padding-bottom:20px}
-.btn{
-  width:100%;background:var(--blue);color:#fff;border:none;
-  border-radius:14px;padding:17px;font-size:15px;font-weight:700;
-  cursor:pointer;transition:opacity .15s;letter-spacing:-.1px
-}
-.btn:disabled{background:var(--card2);color:var(--sub);cursor:default}
-.btn:not(:disabled):active{opacity:.85}
+    .actions { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin-top: 16px; }
+    .primary, .secondary { min-height: 52px; padding: 0 17px; border-radius: 13px; cursor: pointer; font-size: 15px; font-weight: 720; transition: transform .16s ease, opacity .16s ease, background .16s ease; }
+    .primary { border: 1px solid var(--accent); background: var(--accent); color: #fff; }
+    .primary:disabled { border-color: #babdb7; background: #babdb7; color: #eef0eb; cursor: not-allowed; }
+    .primary:not(:disabled):active, .secondary:active { transform: scale(.98); }
+    .secondary { border: 1px solid var(--line); background: transparent; color: var(--ink); }
 
-/* SUCCESS */
-.suc{text-align:center;padding:60px 16px}
-.suc-ico{width:74px;height:74px;background:var(--green-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:32px}
-.suc h2{font-size:20px;font-weight:800;margin-bottom:8px}
-.suc p{color:var(--sub);font-size:13px;line-height:1.6}
-.suc-op{margin-top:14px;background:var(--green-dim);border:1px solid rgba(34,197,94,.2);border-radius:11px;padding:11px 15px;font-weight:700;color:var(--green);font-size:14px}
-</style>
+    .notice { display: none; margin-top: 16px; padding: 14px 16px; border-radius: 13px; font-size: 13px; line-height: 1.45; }
+    .notice.show { display: block; }
+    .notice.info { border: 1px solid #c3d8cf; background: var(--accent-soft); color: var(--accent-ink); }
+    .notice.error { border: 1px solid #e5c4bf; background: #faebe9; color: var(--danger); }
+
+    .loading { padding: 90px 16px; text-align: center; }
+    .spinner { width: 32px; height: 32px; margin: 0 auto 14px; border: 3px solid #ced2cd; border-top-color: var(--accent); border-radius: 50%; animation: spin .75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    .empty { padding: 36px 22px; text-align: center; }
+    .empty-icon { margin-bottom: 10px; font-size: 30px; }
+    .empty h2 { margin: 0; font-size: 20px; letter-spacing: -.03em; }
+    .empty p { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+    .hidden { display: none !important; }
+    @media (max-width: 430px) {
+      .shell { padding-left: 12px; padding-right: 12px; }
+      .topbar { padding-left: 4px; padding-right: 4px; }
+      .details { grid-template-columns: 1fr; }
+      .detail.full { grid-column: auto; }
+      .actions { grid-template-columns: 1fr; }
+      .section-note { display: none; }
+    }
+  </style>
 </head>
 <body>
-
-<div class="hdr">
-  <div>
-    <div class="hdr-title">🎬 Диспетчер ПРО</div>
-    <div class="hdr-sub">Підтвердження заявки</div>
-  </div>
-  <div class="dot"></div>
-</div>
-
-<div class="wrap">
-  <div id="loading" class="spin-box">
-    <div class="spin"></div>
-    <p>Завантаження...</p>
-  </div>
-
-  <div id="error" style="display:none"></div>
-
-  <div id="main" style="display:none">
-    <!-- заявка -->
-    <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <span class="card-lbl" style="margin:0">Заявка</span>
-        <span id="badge" class="badge badge-new">🔴 Нова</span>
-      </div>
-      <div class="req-id" id="req-id">#—</div>
-      <div class="req-topic" id="req-topic">—</div>
-      <div class="dt-bar">
-        <div class="dt-ico">📅</div>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">🎬</div>
         <div>
-          <div class="dt-date" id="dt-date">—</div>
-          <div class="dt-time" id="dt-time">—</div>
+          <div class="brand-name">Диспетчер ПРО</div>
+          <div class="brand-sub">Комплектування операторів</div>
         </div>
       </div>
-      <div class="info-row">
-        <div class="info-cell">
-          <div class="info-lbl">📍 Локація</div>
-          <div class="info-val" id="i-loc">—</div>
+      <div class="secure"><span class="secure-dot"></span>робоча картка</div>
+    </header>
+
+    <section id="loading" class="loading">
+      <div class="spinner"></div>
+      <p>Завантажую заявку…</p>
+    </section>
+
+    <section id="empty" class="card empty hidden">
+      <div class="empty-icon">⚠️</div>
+      <h2 id="emptyTitle">Заявку не знайдено</h2>
+      <p id="emptyText">Відкрий картку за посиланням із Telegram.</p>
+    </section>
+
+    <section id="app" class="hidden">
+      <article class="card request-card">
+        <div class="request-head">
+          <div class="request-meta">
+            <div class="eyebrow">Заявка на зйомку</div>
+            <div id="status" class="badge badge-new">Нова</div>
+          </div>
+          <h1 id="topic">—</h1>
+          <div id="requestId" class="request-id">Заявка —</div>
         </div>
-        <div class="info-cell">
-          <div class="info-lbl">🎙 Журналіст</div>
-          <div class="info-val" id="i-jour">—</div>
+        <div class="date-strip">
+          <div class="date-icon">◷</div>
+          <div>
+            <div id="dateMain" class="date-main">—</div>
+            <div id="dateSub" class="date-sub">—</div>
+          </div>
         </div>
-      </div>
-    </div>
+        <div class="details">
+          <div class="detail">
+            <div class="detail-label">Локація</div>
+            <div id="location" class="detail-value">—</div>
+          </div>
+          <div class="detail">
+            <div class="detail-label">Журналіст</div>
+            <div id="journalist" class="detail-value">—</div>
+          </div>
+          <div id="notesWrap" class="detail full">
+            <div class="detail-label">Примітка</div>
+            <div id="notes" class="detail-value">—</div>
+          </div>
+        </div>
+      </article>
 
-    <!-- вже підтверджено -->
-    <div id="conf-bar" class="confirmed-bar" style="display:none">
-      <div class="ci">✅</div>
-      <div>
-        <div class="ct">Оператор призначений</div>
-        <div class="cs" id="conf-name">—</div>
-      </div>
-    </div>
+      <section class="card selection" aria-labelledby="operatorHeading">
+        <div class="section-head">
+          <div>
+            <div class="eyebrow">Знімальна група</div>
+            <h2 id="operatorHeading" class="section-title">Оберіть операторів</h2>
+          </div>
+          <div class="section-note">Можна обрати одного або кількох</div>
+        </div>
+        <div id="operators" class="operator-list"></div>
+        <p id="selectionSummary" class="selection-summary">Операторів ще не обрано.</p>
+        <div class="actions">
+          <button id="confirm" class="primary" type="button" disabled>Підтвердити операторів</button>
+          <button id="clear" class="secondary" type="button">Очистити</button>
+        </div>
+        <div id="notice" class="notice" role="status"></div>
+      </section>
+    </section>
+  </main>
 
-    <!-- вибір оператора -->
-    <div class="card" id="ops-card">
-      <div class="card-lbl">👤 Оберіть оператора</div>
-      <div class="ops" id="ops-list"></div>
-    </div>
+  <script>
+    const CONFIG = {
+      // Set these two Latenode webhook URLs when the backend scenarios are ready.
+      loadRequestUrl: '',
+      saveOperatorsUrl: ''
+    };
 
-    <div class="btn-wrap">
-      <button class="btn" id="btn" disabled>Підтвердити заявку</button>
-    </div>
-  </div>
+    const DEMO_REQUEST = {
+      id: 'demo-27',
+      status: 'Нова',
+      topic: 'Інтерв’ю',
+      date: '2026-07-27',
+      time: '10:00',
+      location: 'Тестова студія',
+      journalist: 'Донцова Софія',
+      notes: 'Потрібна легка знімальна група.',
+      operatorIds: []
+    };
 
-  <div id="success" style="display:none" class="suc">
-    <div class="suc-ico">✅</div>
-    <h2>Підтверджено!</h2>
-    <p>Заявку прийнято.<br>Telegram оновиться автоматично.</p>
-    <div class="suc-op" id="suc-op"></div>
-  </div>
-</div>
+    const DEMO_OPERATORS = [
+      { id: 'op-stepanovych', name: 'Степанович Петро', availability: 'free', availabilityText: 'Вільний на час заявки' },
+      { id: 'op-nakonechnyi', name: 'Наконечний Сергій', availability: 'unknown', availabilityText: 'Зайнятість ще не підключена' },
+      { id: 'op-pollodiuk', name: 'Поллодюк Олександр', availability: 'free', availabilityText: 'Вільний на час заявки' },
+      { id: 'op-nevmerzhytskyi', name: 'Невмержицький Дмитро', availability: 'busy', availabilityText: 'Зайнятий до 13:00' }
+    ];
 
-<script>
-const API  = 'https://app.nocodb.com/api/v1/db/data/noco/prxyfx05756id1t/mz020c9lrd8vb7o';
-const TOK  = 'nc_pat_ERmrNABeLtnjeIOMyLwX_4ZCr0s6N35GZcSpNh_A';
-const OPS  = [
-  {name:'Степанович Петро',    ico:'🎥'},
-  {name:'Наконечний Сергій',   ico:'📷'},
-  {name:'Поллодюк Олександр',  ico:'🎬'},
-  {name:'Невмержицький Дмитро',ico:'📹'},
-];
+    const state = { request: null, operators: [], selectedIds: new Set(), demo: false };
+    const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(window.location.search);
+    const recordId = params.get('recordId');
 
-const $  = id => document.getElementById(id);
-const p  = new URLSearchParams(location.search);
-const id = p.get('recordId');
-let sel  = null;
-
-function fmtDate(s){
-  if(!s) return '—';
-  const d = new Date(s+'T00:00:00');
-  return d.toLocaleDateString('uk-UA',{weekday:'long',day:'numeric',month:'long'});
-}
-
-function renderOps(busyName){
-  const list = $('ops-list');
-  list.innerHTML = '';
-  OPS.forEach(op=>{
-    const busy = busyName && busyName===op.name;
-    const el = document.createElement('div');
-    el.className = 'op'+(busy?' busy':'');
-    el.innerHTML = `
-      <div class="op-ava">${op.ico}</div>
-      <div class="op-info">
-        <div class="op-name">${op.name}</div>
-        <div class="op-st ${busy?'occ':'free'}">${busy?'❌ Зайнятий':'✅ Вільний'}</div>
-      </div>
-      <div class="op-chk">
-        <svg class="chk-svg" width="11" height="9" viewBox="0 0 11 9" fill="none">
-          <path d="M1 4.5L4 7.5L10 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>`;
-    if(!busy) el.addEventListener('click',()=>{
-      document.querySelectorAll('.op').forEach(c=>c.classList.remove('sel'));
-      el.classList.add('sel');
-      sel = op.name;
-      $('btn').disabled = false;
-    });
-    list.appendChild(el);
-  });
-}
-
-async function load(){
-  if(!id){
-    $('loading').style.display='none';
-    $('error').innerHTML='<div class="err"><div class="ei">⚠️</div><p>Record ID не вказано.<br>Відкрийте посилання з Telegram.</p></div>';
-    $('error').style.display='block';
-    return;
-  }
-  try{
-    const r = await fetch(`${API}/${id}`,{headers:{'xc-token':TOK}});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d = await r.json();
-
-    $('loading').style.display='none';
-    $('main').style.display='block';
-
-    $('req-id').textContent  = '#'+(d.Id||id);
-    $('req-topic').textContent = d['Тема']||d['Назва']||'—';
-    $('dt-date').textContent = fmtDate(d['Дата']);
-    $('dt-time').textContent = d['Час']?'о '+d['Час']:'—';
-    $('i-loc').textContent   = d['Локація']||'—';
-    $('i-jour').textContent  = d['Журналіст']||'—';
-
-    const done = (d['Статус_Заявки']||'').includes('Готово');
-    if(done){
-      $('badge').textContent  = '🟢 Готово';
-      $('badge').className    = 'badge badge-ok';
-      const op = d['Operator_FINAL']||d['Operator_LINK']||'';
-      if(op){ $('conf-bar').style.display='flex'; $('conf-name').textContent=op; }
-      $('btn').disabled=true;
-      $('btn').textContent='✅ Вже підтверджено';
+    function initials(name) {
+      return name.split(' ').filter(Boolean).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
     }
-    renderOps(done?(d['Operator_LINK']||''):null);
 
-  }catch(e){
-    $('loading').style.display='none';
-    $('error').innerHTML=`<div class="err"><div class="ei">⚠️</div><p>Помилка: ${e.message}</p></div>`;
-    $('error').style.display='block';
-  }
-}
+    function formatDate(value) {
+      if (!value) return 'Дата не вказана';
+      const date = new Date(value + 'T12:00:00');
+      return new Intl.DateTimeFormat('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' }).format(date);
+    }
 
-$('btn').addEventListener('click',async()=>{
-  if(!sel) return;
-  const btn=$('btn');
-  btn.textContent='Підтверджую...'; btn.disabled=true;
-  try{
-    const r = await fetch(`${API}/${id}`,{
-      method:'PATCH',
-      headers:{'xc-token':TOK,'Content-Type':'application/json'},
-      body:JSON.stringify({'Operator_LINK':sel,'Operator_FINAL':sel,'Статус_Заявки':'🟢 Готово'})
+    function setNotice(text, tone) {
+      const notice = $('notice');
+      notice.className = 'notice show ' + tone;
+      notice.textContent = text;
+    }
+
+    function hideNotice() {
+      $('notice').className = 'notice';
+      $('notice').textContent = '';
+    }
+
+    function showEmpty(title, text) {
+      $('loading').classList.add('hidden');
+      $('app').classList.add('hidden');
+      $('emptyTitle').textContent = title;
+      $('emptyText').textContent = text;
+      $('empty').classList.remove('hidden');
+    }
+
+    function renderRequest(request) {
+      $('topic').textContent = request.topic || request.title || 'Без теми';
+      $('requestId').textContent = 'Заявка ' + (request.id || '—');
+      $('dateMain').textContent = formatDate(request.date);
+      $('dateSub').textContent = request.time ? 'Початок о ' + request.time : 'Час не вказаний';
+      $('location').textContent = request.location || 'Не вказано';
+      $('journalist').textContent = request.journalist || 'Не вказано';
+      $('notes').textContent = request.notes || 'Без додаткових приміток';
+      $('status').textContent = request.status || 'В роботі';
+      $('status').className = 'badge ' + ((request.status || '').toLowerCase().includes('готов') ? 'badge-ready' : 'badge-new');
+    }
+
+    function renderOperators() {
+      const list = $('operators');
+      list.innerHTML = '';
+      state.operators.forEach((operator) => {
+        const selected = state.selectedIds.has(operator.id);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'operator';
+        button.setAttribute('aria-pressed', String(selected));
+        button.innerHTML = `
+          <span class="avatar">${initials(operator.name)}</span>
+          <span>
+            <span class="operator-name">${operator.name}</span>
+            <span class="operator-meta">Оператор</span>
+            <span class="availability ${operator.availability || 'unknown'}">${operator.availabilityText || 'Статус не вказаний'}</span>
+          </span>
+          <span class="tick" aria-hidden="true">✓</span>`;
+        button.addEventListener('click', () => {
+          if (state.selectedIds.has(operator.id)) state.selectedIds.delete(operator.id);
+          else state.selectedIds.add(operator.id);
+          renderOperators();
+          updateSelectionUi();
+          hideNotice();
+        });
+        list.appendChild(button);
+      });
+    }
+
+    function updateSelectionUi() {
+      const selected = state.operators.filter((operator) => state.selectedIds.has(operator.id));
+      const summary = $('selectionSummary');
+      const confirm = $('confirm');
+      confirm.disabled = selected.length === 0;
+      if (selected.length === 0) summary.textContent = 'Операторів ще не обрано.';
+      else if (selected.length === 1) summary.innerHTML = '<strong>Обрано:</strong> ' + selected[0].name;
+      else summary.innerHTML = '<strong>Обрано операторів:</strong> ' + selected.map((operator) => operator.name).join(', ');
+    }
+
+    async function loadFromApi() {
+      if (!CONFIG.loadRequestUrl) throw new Error('BACKEND_NOT_CONFIGURED');
+      const url = new URL(CONFIG.loadRequestUrl);
+      url.searchParams.set('recordId', recordId);
+      const response = await fetch(url, { headers: { Accept: 'application/json' } });
+      if (!response.ok) throw new Error('HTTP_' + response.status);
+      const data = await response.json();
+      if (!data.request || !Array.isArray(data.operators)) throw new Error('INVALID_RESPONSE');
+      return data;
+    }
+
+    async function saveSelection() {
+      const operatorRecordIds = Array.from(state.selectedIds);
+      if (!operatorRecordIds.length) return;
+      const confirm = $('confirm');
+      confirm.disabled = true;
+      confirm.textContent = 'Зберігаю…';
+      hideNotice();
+      try {
+        if (state.demo) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          setNotice('Тестовий склад збережено. Після підключення Latenode зміни підуть у Airtable.', 'info');
+        } else {
+          if (!CONFIG.saveOperatorsUrl) throw new Error('BACKEND_NOT_CONFIGURED');
+          const response = await fetch(CONFIG.saveOperatorsUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ recordId, operatorRecordIds })
+          });
+          if (!response.ok) throw new Error('HTTP_' + response.status);
+          const data = await response.json();
+          setNotice(data.message || 'Склад операторів збережено.', 'info');
+        }
+      } catch (error) {
+        setNotice(error.message === 'BACKEND_NOT_CONFIGURED'
+          ? 'Картка готова, але серверний webhook ще не підключений.'
+          : 'Не вдалося зберегти вибір. Спробуй ще раз.', 'error');
+      } finally {
+        confirm.disabled = state.selectedIds.size === 0;
+        confirm.textContent = 'Підтвердити операторів';
+      }
+    }
+
+    async function init() {
+      try {
+        let data;
+        if (params.get('demo') === '1') {
+          state.demo = true;
+          data = { request: DEMO_REQUEST, operators: DEMO_OPERATORS };
+        } else {
+          if (!recordId) return showEmpty('Немає номера заявки', 'Відкрий картку за персональним посиланням із Telegram.');
+          data = await loadFromApi();
+        }
+        state.request = data.request;
+        state.operators = data.operators;
+        (data.request.operatorIds || []).forEach((id) => state.selectedIds.add(id));
+        renderRequest(state.request);
+        renderOperators();
+        updateSelectionUi();
+        $('loading').classList.add('hidden');
+        $('app').classList.remove('hidden');
+      } catch (error) {
+        if (error.message === 'BACKEND_NOT_CONFIGURED') {
+          showEmpty('Картка ще підключається', 'Інтерфейс готовий. Залишилося додати два Latenode webhook-и для читання заявки та збереження операторів.');
+        } else {
+          showEmpty('Не вдалося відкрити заявку', 'Перевір посилання або спробуй оновити сторінку.');
+        }
+      }
+    }
+
+    $('confirm').addEventListener('click', saveSelection);
+    $('clear').addEventListener('click', () => {
+      state.selectedIds.clear();
+      renderOperators();
+      updateSelectionUi();
+      hideNotice();
     });
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    $('main').style.display='none';
-    $('suc-op').textContent='👤 '+sel;
-    $('success').style.display='block';
-  }catch(e){
-    btn.textContent='Помилка: '+e.message+'. Спробуйте ще.';
-    btn.disabled=false;
-  }
-});
-
-load();
-</script>
+    init();
+  </script>
 </body>
 </html>
